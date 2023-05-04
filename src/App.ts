@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import theme from "./styles/theme";
 
-type props = {
-  studyStarted: boolean;
+export type props = {
+  studyStarted?: boolean;
 };
 
 export const Wrapper = styled.div<props>`
@@ -19,13 +19,41 @@ export const Title = styled.h1<props>`
   font-size: 100px;
   text-align: center;
   padding: 5px;
-  margin-bottom: ${(props) => (props.studyStarted ? "590px" : "")};
+  margin-bottom: ${(props) => (props.studyStarted ? "550px" : "")};
   transition: 1.3s;
+
+  @media (max-width: 1280px){
+    margin-bottom: ${(props) => (props.studyStarted ? "450px" : "")};
+  }
+
+  @media (max-width: 1134px){
+    margin-bottom: ${(props) => (props.studyStarted ? "450px" : "")};
+  }
+
+  @media (max-width: 1024px){
+    margin-bottom: ${(props) => (props.studyStarted ? "300px" : "")};
+    font-size: 80px;
+  }
+
+  @media (max-width: 678px){
+    font-size: 70px;
+  }
+
+  @media (max-width: 678px){
+    margin-bottom: ${(props) => (props.studyStarted ? "350px" : "")};
+  }
+
   @media (max-width: 500px) {
     font-size: 70px;
   }
-  @media (max-width: 350px) {
+
+  @media (max-width: 411px) {
     font-size: 50px;
+    margin-bottom: ${(props) => (props.studyStarted ? "250px" : "")};
+  }
+  @media (max-width: 375px) {
+    font-size: 50px;
+    margin-bottom: ${(props) => (props.studyStarted ? "250px" : "")};
   }
 `;
 
@@ -55,6 +83,7 @@ export const Button = styled.button<props>`
   border: 0px;
   color: ${theme.baseColors.blue};
   opacity: ${(props) => (props.studyStarted ? "0" : "1")};
+  z-index: 2;
 
   :hover {
     scale: 1.2;
@@ -63,10 +92,3 @@ export const Button = styled.button<props>`
 `;
 
 
-// export const Container = styled.div`
-//   width: 500px;
-//   height: 600px;
-//   background-color: white;
-//   position: absolute;
-//   align-self: center;
-// `

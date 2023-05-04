@@ -2,6 +2,7 @@ import "./App.ts";
 import { useState } from "react";
 import { Button, Description, Title, Wrapper } from "./App.ts";
 import { GlobalStyles } from "./styles/global.ts";
+import { TimerMenu } from "./components/timerMenu/TimerMenu.tsx";
 
 function App() {
   const [studyStarted, setStudyStarded] = useState<boolean>(false);
@@ -24,7 +25,7 @@ function App() {
         >
           Start your studies
         </Button>
-        {/* <Container></Container> */}
+        <TimerMenu isActive={studyStarted}></TimerMenu>
       </Wrapper>
     </>
   );
