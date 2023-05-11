@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "../../App";
 import { TimeWrapper } from "./styles";
 
@@ -6,10 +7,38 @@ type data = {
 };
 
 export function TimerMenu(props: data) {
+  const [minutes, setMinutes] = useState(1);
+  const [seconds, setSeconds] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+
+  useEffect(() => {
+    let interval: number | undefined;
+    if (isRunning) {
+      interval = setInterval(() => {
+        if (seconds <= 0) {
+          setMinutes(minutes - 1);
+          setSeconds(59);
+        } else if (seconds > 0) {
+          setSeconds(seconds - 1);
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning, seconds, minutes]);
+
+  useEffect(() => {
+    if (minutes === 0 && seconds === 0) {
+      setMinutes(10);
+    }
+  }, [minutes, seconds]);
+
   return (
     <TimeWrapper studyStarted={props.isActive}>
       <div className="timeDiv">
-        <h1>00:00</h1>
+        <h1>
+          {minutes}:{seconds <= 9 && "0"}
+          {seconds}
+        </h1>
         <p>Study time!</p>
       </div>
       <form>
@@ -24,7 +53,14 @@ export function TimerMenu(props: data) {
           </select>
         </div>
 
-        <Button>Start!</Button>
+        <Button
+          onClick={() => {
+            setIsRunning(!isRunning);
+          }}
+          type="button"
+        >
+          {isRunning ? "Stop" : "Start"}
+        </Button>
       </form>
     </TimeWrapper>
   );
