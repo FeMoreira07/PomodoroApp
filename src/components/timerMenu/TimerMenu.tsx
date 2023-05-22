@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../App";
 import { TimeWrapper } from "./styles";
+import music from "../../assets/iphone-13-pro-alarm.mp3";
 
 type data = {
   isActive: boolean;
@@ -9,11 +10,13 @@ type data = {
 export function TimerMenu(props: data) {
   const [minutes, setMinutes] = useState(1);
   const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  const [studyIsRunning, setStudyIsRunning] = useState(false);
+  const [restTime, setRestime] = useState(false);
+  const [selectValue, setSelectValue] = useState('1');
 
   useEffect(() => {
     let interval: number | undefined;
-    if (isRunning) {
+    if (studyIsRunning) {
       interval = setInterval(() => {
         if (seconds <= 0) {
           setMinutes(minutes - 1);
@@ -24,13 +27,24 @@ export function TimerMenu(props: data) {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isRunning, seconds, minutes]);
+  }, [studyIsRunning, seconds, minutes]);
 
   useEffect(() => {
     if (minutes === 0 && seconds === 0) {
-      setMinutes(10);
+      const audio = new Audio(music);
+      if (restTime === false) {
+        setRestime(true);
+        setMinutes(10);
+        audio.play();
+        setStudyIsRunning(false);
+      } else {
+        setRestime(false);
+        setMinutes(30);
+        audio.play();
+        setStudyIsRunning(false);
+      }
     }
-  }, [minutes, seconds]);
+  }, [minutes, seconds, restTime]);
 
   return (
     <TimeWrapper studyStarted={props.isActive}>
@@ -39,12 +53,15 @@ export function TimerMenu(props: data) {
           {minutes}:{seconds <= 9 && "0"}
           {seconds}
         </h1>
-        <p>Study time!</p>
+        <p>{restTime ? "Rest time!" : "Study Time"}</p>
       </div>
       <form>
         <div className="selectDiv">
           <label> Select how many yours to study </label>
-          <select>
+          <select
+            value={selectValue}
+            onChange={(e) => setSelectValue(e.target.value)}
+          >
             <option value="1">1 hour</option>
             <option value="2">2 hours</option>
             <option value="3">3 hours</option>
@@ -55,11 +72,11 @@ export function TimerMenu(props: data) {
 
         <Button
           onClick={() => {
-            setIsRunning(!isRunning);
+            setStudyIsRunning(!studyIsRunning);
           }}
           type="button"
         >
-          {isRunning ? "Stop" : "Start"}
+          {studyIsRunning ? "Stop" : "Start"}
         </Button>
       </form>
     </TimeWrapper>
