@@ -3,65 +3,76 @@ import { Button } from "../../App";
 import { TimeWrapper } from "./styles";
 import music from "../../assets/iphone-13-pro-alarm.mp3";
 
-type data = {
+type Data = {
   isActive: boolean;
 };
 
-export function TimerMenu(props: data) {
-  const [minutes, setMinutes] = useState(1);
-  const [seconds, setSeconds] = useState(0);
-  const [studyIsRunning, setStudyIsRunning] = useState(false);
-  const [restTime, setRestime] = useState(false);
-  const [selectValue, setSelectValue] = useState('1');
+export function TimerMenu(props: Data) {
+  const [time, setTime] = useState({ minutes: 1, seconds: 0 });
+  const [restTime, setRestTime] = useState(false);
+  const [selectValue, setSelectValue] = useState("1");
+  const [timerRunning, setTimerRunning] = useState(false);
 
   useEffect(() => {
     let interval: number | undefined;
-    if (studyIsRunning) {
+    if (timerRunning) {
       interval = setInterval(() => {
-        if (seconds <= 0) {
-          setMinutes(minutes - 1);
-          setSeconds(59);
-        } else if (seconds > 0) {
-          setSeconds(seconds - 1);
-        }
+        setTime((prevTime) => {
+          if (prevTime.seconds > 0) {
+            return { minutes: prevTime.minutes, seconds: prevTime.seconds - 1 };
+          } else if (prevTime.minutes > 0) {
+            return { minutes: prevTime.minutes - 1, seconds: 59 };
+          } else {
+            return prevTime;
+          }
+        });
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [studyIsRunning, seconds, minutes]);
+  }, [timerRunning]);
 
   useEffect(() => {
-    if (minutes === 0 && seconds === 0) {
+    if (time.minutes === 0 && time.seconds === 0) {
       const audio = new Audio(music);
       if (restTime === false) {
-        setRestime(true);
-        setMinutes(10);
+        setRestTime(true);
+        setTime({ minutes: 10, seconds: 0 });
         audio.play();
-        setStudyIsRunning(false);
+        setTimerRunning(false);
       } else {
-        setRestime(false);
-        setMinutes(30);
+        setRestTime(false);
+        setTime({ minutes: 30, seconds: 0 });
         audio.play();
-        setStudyIsRunning(false);
+        setTimerRunning(false);
       }
     }
-  }, [minutes, seconds, restTime]);
+  }, [time, restTime]);
+
+  const handleTimerToggle = () => {
+    setTimerRunning((prevState) => !prevState);
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectValue(e.target.value);
+  };
+
+  const handleStartStopButtonClick = () => {
+    handleTimerToggle();
+  };
 
   return (
     <TimeWrapper studyStarted={props.isActive}>
       <div className="timeDiv">
         <h1>
-          {minutes}:{seconds <= 9 && "0"}
-          {seconds}
+          {time.minutes}:{time.seconds <= 9 && "0"}
+          {time.seconds}
         </h1>
         <p>{restTime ? "Rest time!" : "Study Time"}</p>
       </div>
       <form>
         <div className="selectDiv">
-          <label> Select how many yours to study </label>
-          <select
-            value={selectValue}
-            onChange={(e) => setSelectValue(e.target.value)}
-          >
+          <label>Select how many hours to study</label>
+          <select value={selectValue} onChange={handleSelectChange}>
             <option value="1">1 hour</option>
             <option value="2">2 hours</option>
             <option value="3">3 hours</option>
@@ -69,14 +80,8 @@ export function TimerMenu(props: data) {
             <option value="5">5 hours</option>
           </select>
         </div>
-
-        <Button
-          onClick={() => {
-            setStudyIsRunning(!studyIsRunning);
-          }}
-          type="button"
-        >
-          {studyIsRunning ? "Stop" : "Start"}
+        <Button type="button" onClick={handleStartStopButtonClick}>
+          {timerRunning ? "Stop" : "Start"}
         </Button>
       </form>
     </TimeWrapper>
