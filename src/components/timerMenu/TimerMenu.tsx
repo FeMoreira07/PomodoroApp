@@ -7,11 +7,17 @@ type Data = {
   isActive: boolean;
 };
 
+type Time = {
+  minutes: number;
+  seconds: number;
+};
+
 export function TimerMenu(props: Data) {
-  const [time, setTime] = useState({ minutes: 1, seconds: 0 });
+  const [time, setTime] = useState<Time>({ minutes: 30, seconds: 0 });
   const [restTime, setRestTime] = useState(false);
-  const [selectValue, setSelectValue] = useState("1");
+  const [selectedStudyHours, setSelectedStudyHours] = useState("1");
   const [timerRunning, setTimerRunning] = useState(false);
+  const [studyCounter, setStudyCounter] = useState(1);
 
   useEffect(() => {
     let interval: number | undefined;
@@ -42,6 +48,7 @@ export function TimerMenu(props: Data) {
       } else {
         setRestTime(false);
         setTime({ minutes: 30, seconds: 0 });
+        setStudyCounter((prevCounter) => prevCounter + 1);
         audio.play();
         setTimerRunning(false);
       }
@@ -53,18 +60,28 @@ export function TimerMenu(props: Data) {
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectValue(e.target.value);
+    setSelectedStudyHours(e.target.value);
   };
 
   const handleStartStopButtonClick = () => {
     handleTimerToggle();
   };
 
+  const handleStudyHourCompletion = () => {
+    const studyHours = parseInt(selectedStudyHours);
+    if (studyCounter === studyHours * 2) {
+      handleTimerToggle();
+      alert(`You studied ${studyHours} hour(s) today!`);
+    }
+  };
+
+  useEffect(handleStudyHourCompletion, [studyCounter,selectedStudyHours]);
+
   return (
     <TimeWrapper studyStarted={props.isActive}>
       <div className="timeDiv">
         <h1>
-          {time.minutes}:{time.seconds <= 9 && "0"}
+          {time.minutes}:{time.seconds <= 9 ? "0" : ""}
           {time.seconds}
         </h1>
         <p>{restTime ? "Rest time!" : "Study Time"}</p>
@@ -72,7 +89,7 @@ export function TimerMenu(props: Data) {
       <form>
         <div className="selectDiv">
           <label>Select how many hours to study</label>
-          <select value={selectValue} onChange={handleSelectChange}>
+          <select value={selectedStudyHours} onChange={handleSelectChange}>
             <option value="1">1 hour</option>
             <option value="2">2 hours</option>
             <option value="3">3 hours</option>
