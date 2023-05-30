@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../App";
-import { TimeWrapper } from "./styles";
+import { ModalContainer, TimeWrapper } from "./styles";
 import music from "../../assets/iphone-13-pro-alarm.mp3";
 
 type Data = {
@@ -18,6 +18,7 @@ export function TimerMenu(props: Data) {
   const [selectedStudyHours, setSelectedStudyHours] = useState("1");
   const [timerRunning, setTimerRunning] = useState(false);
   const [studyCounter, setStudyCounter] = useState(1);
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     let interval: number | undefined;
@@ -71,11 +72,12 @@ export function TimerMenu(props: Data) {
     const studyHours = parseInt(selectedStudyHours);
     if (studyCounter === studyHours * 2) {
       handleTimerToggle();
-      alert(`You studied ${studyHours} hour(s) today!`);
+      setIsOpen(!isOpen)
     }
   };
 
-  useEffect(handleStudyHourCompletion, [studyCounter,selectedStudyHours]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(handleStudyHourCompletion, [studyCounter, selectedStudyHours]);
 
   return (
     <TimeWrapper studyStarted={props.isActive}>
@@ -101,6 +103,10 @@ export function TimerMenu(props: Data) {
           {timerRunning ? "Stop" : "Start"}
         </Button>
       </form>
+      <ModalContainer isOpen={isOpen}>
+        <h1>Congratulations, you have completed your studies for today!</h1>
+        <button onClick={()=> setIsOpen(!isOpen)}>Close</button>
+      </ModalContainer>
     </TimeWrapper>
   );
 }

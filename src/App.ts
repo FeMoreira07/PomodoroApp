@@ -83,7 +83,7 @@ export const Button = styled.button<props>`
   border: 0px;
   color: ${theme.baseColors.blue};
   opacity: ${(props) => (props.studyStarted ? "0" : "1")};
-  z-index: 2;
+  z-index: 1;
 
   :hover {
     scale: 1.2;
